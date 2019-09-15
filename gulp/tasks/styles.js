@@ -1,8 +1,7 @@
 //load Gulp ... of course
 const { src, dest, task, watch, series, parallel } = require('gulp');
 
-//load Watch related plugins
-const browserSync = require('browser-sync').create();
+
 
 //load CSS related plugins
 const postcss = require('gulp-postcss'),
@@ -24,22 +23,9 @@ function styles() {
       this.emit('end');
     })
     //4. where do I save the compiled css
-    .pipe(dest('./app/temp/styles'))
-    .pipe(browserSync.stream());
+    .pipe(dest('./app/temp/styles'));
 };
 
-
-function watch_files() {
-  browserSync.init({
-    notify: false,
-    server: {
-      baseDir: "app"
-    }
-  });
-  watch('./app/assets/styles/**/*.css',styles);
-  watch('./app/index.html').on('change', browserSync.reload);
-};
 
 
 exports.styles = styles;
-exports.watch_files = watch_files;
