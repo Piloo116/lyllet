@@ -9,7 +9,8 @@ const postcss = require('gulp-postcss'),
 autoprefixer = require('autoprefixer'),
 cssvars = require('postcss-simple-vars'),
 nested = require('postcss-nested'),
-cssImport = require('postcss-import');
+cssImport = require('postcss-import'),
+mixins = require('postcss-mixins');
 
 
 //functions
@@ -17,7 +18,7 @@ function styles() {
 	//1. where is my scss file
     return src('./app/assets/styles/styles.css')
     //2. pass that file through the compiler
-    .pipe(postcss([cssImport, cssvars, nested, autoprefixer]))
+    .pipe(postcss([cssImport, mixins, cssvars, nested, autoprefixer]))
     //3. keep the compiler running even if an error occures but display the error
     .on('error', function(errorInfo) {
       console.log(errorInfo.toString());
