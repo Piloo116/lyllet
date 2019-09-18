@@ -16,6 +16,7 @@ svgSprite = require('gulp-svg-sprite');
 const config = {
     mode: {
         css:{ 
+            sprite: 'sprite.svg',
             render: {
                 css:{
                     template:'./gulp/templates/sprite.css'
@@ -24,6 +25,8 @@ const config = {
         }
     }
 };
+
+const rename = require('gulp-rename');
 
 //functions
 function styles() {
@@ -60,6 +63,19 @@ function createSprite() {
     .pipe(dest('./app/temp/sprite/'));
 };
 
+function copySpriteCSS() {
+    return src('./app/temp/sprite/css/*.css')
+    .pipe(rename('_sprite.css'))
+    .pipe(dest('./app/assets/styles/modules'));
+};
+
+function copySpriteGraphic() {
+    return src('./app/temp/sprite/css/**/*.svg')
+    .pipe(dest('./app/assets/images/sprites'));
+};
+
 exports.styles = styles;
-exports.watch_files = watch_files;
+exports.watch = watch_files;
 exports.createSprite = createSprite;
+exports.copySpriteCSS = copySpriteCSS;
+exports.icons = series(createSprite, copySpriteGraphic, copySpriteCSS);

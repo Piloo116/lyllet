@@ -1,8 +1,16 @@
+/* Do not edit modules/_sprite directly as it is generated automatically by Gulp.
+Instead edit gulp/template/sprite */
+
 {{#shapes}}
-  .icon--{base} {
+   {{#first}}
+   		.icon {
+    	background-image: url('/assets/images/sprites/{{{sprite}}}');
+		}
+   {{/first}}
+
+  .icon--{{base}} {
   	width: {{width.outer}}px;
   	height: {{height.outer}}px;
-  	background-image: url('/temp/sprites/css/{{{sprite}}}');
   	background-position: {{position.relative.xy}};
   }
 {{/shapes}}
