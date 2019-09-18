@@ -12,10 +12,15 @@ nested = require('postcss-nested'),
 cssImport = require('postcss-import'),
 mixins = require('postcss-mixins'),
 svgSprite = require('gulp-svg-sprite');
+
 const config = {
     mode: {
-        css:{
-
+        css:{ 
+            render: {
+                css:{
+                    template:'./gulp/templates/sprite.css'
+                }
+            }
         }
     }
 };
