@@ -10,8 +10,15 @@ autoprefixer = require('autoprefixer'),
 cssvars = require('postcss-simple-vars'),
 nested = require('postcss-nested'),
 cssImport = require('postcss-import'),
-mixins = require('postcss-mixins');
+mixins = require('postcss-mixins'),
+svgSprite = require('gulp-svg-sprite');
+const config = {
+    mode: {
+        css:{
 
+        }
+    }
+};
 
 //functions
 function styles() {
@@ -42,5 +49,12 @@ function watch_files() {
 };
 
 
+function createSprite() {
+    return src('./app/assets/images/icons/**/*.svg')
+    .pipe(svgSprite(config))
+    .pipe(dest('./app/temp/sprite/'));
+};
+
 exports.styles = styles;
 exports.watch_files = watch_files;
+exports.createSprite = createSprite;
