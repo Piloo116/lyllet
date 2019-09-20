@@ -4,15 +4,16 @@ const { src, dest, task, watch, series, parallel } = require('gulp');
 //load Watch related plugins
 const browserSync = require('browser-sync').create();
 
-
 //load CSS related plugins
 const postcss = require('gulp-postcss'),
 autoprefixer = require('autoprefixer'),
 cssvars = require('postcss-simple-vars'),
 nested = require('postcss-nested'),
 cssImport = require('postcss-import'),
-mixins = require('postcss-mixins'),
-svgSprite = require('gulp-svg-sprite'),
+mixins = require('postcss-mixins');
+
+//load Sprite related plugins
+const svgSprite = require('gulp-svg-sprite'),
 rename = require('gulp-rename'),
 del = require('del');
 
@@ -28,6 +29,10 @@ const config = {
         }
     }
 };
+
+//Load webpack related plugins
+const webpack = require('webpack');
+
 
 
 //functions
@@ -56,6 +61,7 @@ function watch_files() {
   });
   watch('./app/assets/styles/**/*.css',styles);
   watch('./app/index.html').on('change', browserSync.reload);
+  watch('./app/assets/scripts/**/*.js', series(scripts, browserSync.reload));
 };
 
 
@@ -82,10 +88,23 @@ function beginClean() {
 
 function endClean() {
     return del('./app/temp/sprite');
-}
+};
+
+//le lien webpack.config.js ne fonctionne pas
+function scripts(callback) {
+    webpack(require('../../webpack.config.js'), function(err, stats) {
+        if (err) {
+            console.log(err.toString());
+        }
+        console.log(stats.toString);
+        callback();
+    });
+};
+
 
 exports.styles = styles;
 exports.watch = watch_files;
 exports.createSprite = createSprite;
 exports.copySpriteCSS = copySpriteCSS;
 exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCSS, endClean);
+exports.scripts = scripts;
