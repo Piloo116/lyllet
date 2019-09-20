@@ -4,6 +4,7 @@ const { src, dest, task, watch, series, parallel } = require('gulp');
 //load Watch related plugins
 const browserSync = require('browser-sync').create();
 
+
 //load CSS related plugins
 const postcss = require('gulp-postcss'),
 autoprefixer = require('autoprefixer'),
@@ -11,7 +12,9 @@ cssvars = require('postcss-simple-vars'),
 nested = require('postcss-nested'),
 cssImport = require('postcss-import'),
 mixins = require('postcss-mixins'),
-svgSprite = require('gulp-svg-sprite');
+svgSprite = require('gulp-svg-sprite'),
+rename = require('gulp-rename'),
+del = require('del');
 
 const config = {
     mode: {
@@ -26,7 +29,6 @@ const config = {
     }
 };
 
-const rename = require('gulp-rename');
 
 //functions
 function styles() {
@@ -74,8 +76,16 @@ function copySpriteGraphic() {
     .pipe(dest('./app/assets/images/sprites'));
 };
 
+function beginClean() {
+    return del(['./app/temp/sprite', './app/assets/images/sprites']);
+};
+
+function endClean() {
+    return del('./app/temp/sprite');
+}
+
 exports.styles = styles;
 exports.watch = watch_files;
 exports.createSprite = createSprite;
 exports.copySpriteCSS = copySpriteCSS;
-exports.icons = series(createSprite, copySpriteGraphic, copySpriteCSS);
+exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCSS, endClean);
