@@ -18,7 +18,9 @@
   "homepage": "https://github.com/Piloo116/lyllet#readme",
   "dependencies": {
     "jquery": "^3.4.1",
-    "normalize.css": "^8.0.1"
+    "jquery-smooth-scroll": "^2.2.0",
+    "normalize.css": "^8.0.1",
+    "waypoints": "^4.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^9.6.1",
