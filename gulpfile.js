@@ -140,7 +140,7 @@ function modern() {
 };
 
 function deleteDistFolder() {
-    return del("./dist");
+    return del("./docs");
 };
 
 function copyGeneralFiles () {
@@ -154,10 +154,10 @@ function copyGeneralFiles () {
     '!./app/temp/**'
     ]
     return src(pathsToCopy)
-    .pipe(dest("./dist"));
+    .pipe(dest("./docs"));
 };
 
-
+//ne marche pas
 function optimizeImages() {
     return src(['./app/assets/images/**/*', '!./app/assets/images/icons', '!.app/assets/images/icons/**/*'])
     .pipe(imagemin({
@@ -165,16 +165,20 @@ function optimizeImages() {
         interlaced: true,
         multipass:true
     }))
-    .pipe(dest("./dist/assets/images"));
+    .pipe(dest("./docs/assets/images"));
 };
 
 function previewDist() {
       browserSync.init({
     notify: false,
     server: {
-      baseDir: "dist"
+      baseDir: "docs"
     }
   });
+};
+
+function useminTrigger() {
+    start("useminBuild");
 };
 
 function useminBuild() {
@@ -183,7 +187,7 @@ function useminBuild() {
         css: [function() {return rev()}, function() {return cssnano()}],
         js: [function() {return rev()}, function() {return uglify()}]
     }))
-    .pipe(dest("./dist"));
+    .pipe(dest("./docs"));
 };
 
 exports.styles = styles;
@@ -193,5 +197,7 @@ exports.copySpriteCSS = copySpriteCSS;
 exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean);
 exports.scripts = scripts;
 exports.modernizr = modern;
-exports.build = series(deleteDistFolder, styles, scripts, copyGeneralFiles, series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean), optimizeImages, useminBuild);
+exports.build = series(deleteDistFolder, styles, scripts, copyGeneralFiles, series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean), optimizeImages, useminTrigger);
 exports.previewDist = previewDist;
+
+//dist = docs on github
