@@ -92,7 +92,7 @@ function endClean() {
 
 //le lien webpack.config.js ne fonctionne pas
 function scripts(callback) {
-    webpack(require('../../webpack.config.js'), function(err, stats) {
+    webpack(require('./webpack.config.js'), function(err, stats) {
         if (err) {
             console.log(err.toString());
         }
