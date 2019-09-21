@@ -10,7 +10,12 @@ autoprefixer = require('autoprefixer'),
 cssvars = require('postcss-simple-vars'),
 nested = require('postcss-nested'),
 cssImport = require('postcss-import'),
-mixins = require('postcss-mixins');
+mixins = require('postcss-mixins'),
+imagemin = require('gulp-imagemin'),
+usemin = require('gulp-usemin'),
+rev = require('gulp-rev'),
+cssnano = require('gulp-cssnano'),
+uglify = require('gulp-uglify');
 
 //load Sprite related plugins
 const svgSprite = require('gulp-svg-sprite'),
@@ -48,6 +53,9 @@ const webpack = require('webpack');
 
 //load modernizr
 const modernizr = require('gulp-modernizr');
+
+//load build
+
 
 //functions
 function styles() {
@@ -131,6 +139,52 @@ function modern() {
     .pipe(dest('./app/temp/scripts/'));
 };
 
+function deleteDistFolder() {
+    return del("./dist");
+};
+
+function copyGeneralFiles () {
+    var pathsToCopy = [
+    './app/**/*',
+    '!./app/index.html',
+    '!./app/assets/images/**',
+    '!./app/assets/styles/**',
+    '!./app/assets/scripts/**',
+    '!./app/temp',
+    '!./app/temp/**'
+    ]
+    return src(pathsToCopy)
+    .pipe(dest("./dist"));
+};
+
+
+function optimizeImages() {
+    return src(['./app/assets/images/**/*', '!./app/assets/images/icons', '!.app/assets/images/icons/**/*'])
+    .pipe(imagemin({
+        progressive: true,
+        interlaced: true,
+        multipass:true
+    }))
+    .pipe(dest("./dist/assets/images"));
+};
+
+function previewDist() {
+      browserSync.init({
+    notify: false,
+    server: {
+      baseDir: "dist"
+    }
+  });
+};
+
+function useminBuild() {
+    return src("./app/index.html")
+    .pipe(usemin({
+        css: [function() {return rev()}, function() {return cssnano()}],
+        js: [function() {return rev()}, function() {return uglify()}]
+    }))
+    .pipe(dest("./dist"));
+};
 
 exports.styles = styles;
 exports.watch = watch_files;
@@ -139,3 +193,5 @@ exports.copySpriteCSS = copySpriteCSS;
 exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean);
 exports.scripts = scripts;
 exports.modernizr = modern;
+exports.build = series(deleteDistFolder, styles, scripts, copyGeneralFiles, series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean), optimizeImages, useminBuild);
+exports.previewDist = previewDist;
