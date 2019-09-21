@@ -15,11 +15,24 @@ mixins = require('postcss-mixins');
 //load Sprite related plugins
 const svgSprite = require('gulp-svg-sprite'),
 rename = require('gulp-rename'),
-del = require('del');
+del = require('del'),
+svg2png = require('gulp-svg2png');
 
 const config = {
+    shape: {
+        spacing: {
+            padding: 1
+        }
+    },
     mode: {
         css:{ 
+            variables: {
+                replaceSvgWithPng: function() {
+                    return function(sprite, render) {
+                        return render(sprite).split('.svg').join('.png');
+                    }
+                }
+            },
             sprite: 'sprite.svg',
             render: {
                 css:{
@@ -30,10 +43,11 @@ const config = {
     }
 };
 
-//Load webpack related plugins
+//load webpack related plugins
 const webpack = require('webpack');
 
-
+//load modernizr
+const modernizr = require('gulp-modernizr');
 
 //functions
 function styles() {
@@ -61,7 +75,7 @@ function watch_files() {
   });
   watch('./app/assets/styles/**/*.css',styles);
   watch('./app/index.html').on('change', browserSync.reload);
-  watch('./app/assets/scripts/**/*.js', series(scripts, browserSync.reload));
+  watch('./app/assets/scripts/**/*.js', series(modern, scripts, browserSync.reload));
 };
 
 
@@ -71,6 +85,12 @@ function createSprite() {
     .pipe(dest('./app/temp/sprite/'));
 };
 
+function createPngCopy() {
+    return src('./app/temp/sprite/css/*.svg')
+    .pipe(svg2png())
+    .pipe(dest('./app/temp/sprite/css'));
+};
+
 function copySpriteCSS() {
     return src('./app/temp/sprite/css/*.css')
     .pipe(rename('_sprite.css'))
@@ -78,7 +98,7 @@ function copySpriteCSS() {
 };
 
 function copySpriteGraphic() {
-    return src('./app/temp/sprite/css/**/*.svg')
+    return src('./app/temp/sprite/css/**/*.{svg,png}')
     .pipe(dest('./app/assets/images/sprites'));
 };
 
@@ -90,7 +110,7 @@ function endClean() {
     return del('./app/temp/sprite');
 };
 
-//le lien webpack.config.js ne fonctionne pas
+
 function scripts(callback) {
     webpack(require('./webpack.config.js'), function(err, stats) {
         if (err) {
@@ -101,10 +121,21 @@ function scripts(callback) {
     });
 };
 
+function modern() {
+    return src(['./app/assets/styles/**/*.css', './app/assets/scripts/**/*.js'])
+    .pipe(modernizr({
+        "options": [
+            "setClasses"
+        ]
+    }))
+    .pipe(dest('./app/temp/scripts/'));
+};
+
 
 exports.styles = styles;
 exports.watch = watch_files;
 exports.createSprite = createSprite;
 exports.copySpriteCSS = copySpriteCSS;
-exports.icons = series(beginClean, createSprite, copySpriteGraphic, copySpriteCSS, endClean);
+exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean);
 exports.scripts = scripts;
+exports.modernizr = modern;
