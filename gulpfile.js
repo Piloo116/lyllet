@@ -1,5 +1,5 @@
 //load Gulp ... of course
-const { src, dest, task, watch, series, parallel } = require('gulp');
+const { src, dest, task, watch, series, parallel, start } = require('gulp');
 
 //load Watch related plugins
 const browserSync = require('browser-sync').create();
@@ -53,8 +53,6 @@ const webpack = require('webpack');
 
 //load modernizr
 const modernizr = require('gulp-modernizr');
-
-//load build
 
 
 //functions
@@ -118,14 +116,14 @@ function endClean() {
     return del('./app/temp/sprite');
 };
 
-
-function scripts(callback) {
+//le lien ne marche pas
+function scripts(cb) {
     webpack(require('./webpack.config.js'), function(err, stats) {
         if (err) {
             console.log(err.toString());
         }
         console.log(stats.toString);
-        callback();
+        cb();
     });
 };
 
@@ -169,7 +167,7 @@ function optimizeImages() {
 };
 
 function previewDist() {
-      browserSync.init({
+  browserSync.init({
     notify: false,
     server: {
       baseDir: "docs"
@@ -177,9 +175,6 @@ function previewDist() {
   });
 };
 
-function useminTrigger() {
-    start("useminBuild");
-};
 
 function useminBuild() {
     return src("./app/index.html")
@@ -197,7 +192,7 @@ exports.copySpriteCSS = copySpriteCSS;
 exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean);
 exports.scripts = scripts;
 exports.modernizr = modern;
-exports.build = series(deleteDistFolder, styles, scripts, copyGeneralFiles, series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean), optimizeImages, useminTrigger);
+exports.build = series(deleteDistFolder, styles, scripts, copyGeneralFiles, series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean), optimizeImages, useminBuild);
 exports.previewDist = previewDist;
 
 //dist = docs on github
