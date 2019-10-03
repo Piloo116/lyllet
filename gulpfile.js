@@ -1,3 +1,5 @@
+// developper dans app/assets ; fusionner dans app/temp ; reduire dans docs (for github) ou dist
+
 //load Gulp ... of course
 const { src, dest, task, watch, series, parallel, start } = require('gulp');
 
@@ -185,14 +187,14 @@ function useminBuild() {
     .pipe(dest("./docs"));
 };
 
-exports.styles = styles;
-exports.watch = watch_files;
-exports.createSprite = createSprite;
-exports.copySpriteCSS = copySpriteCSS;
-exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean);
-exports.scripts = scripts;
-exports.modernizr = modern;
-exports.build = series(deleteDistFolder, styles, scripts, copyGeneralFiles, series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean), optimizeImages, useminBuild);
-exports.previewDist = previewDist;
+exports.styles = styles; // Plugin de mise en forme css (inclu dans watch)
+exports.watch = watch_files; // ACTION 1: "gulp watch" Surveille html, css, js
+exports.createSprite = createSprite; // Transforme les multiples svg en 1 fichier unique (inclu dans icons)
+exports.copySpriteCSS = copySpriteCSS; // Creer le css pour lire le fichier sprite unique (inclu dans icons)
+exports.icons = series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean); // ACTION 2: "gulp icons" Met à jour le sprite (inclu dans build)
+exports.scripts = scripts; // fusionne les fichiers js en 1 fichier unique (inclu dans watch)
+exports.modernizr = modern; // permet la creation de class en js (inclu dans watch)
+exports.build = series(deleteDistFolder, styles, scripts, copyGeneralFiles, series(beginClean, createSprite, createPngCopy, copySpriteGraphic, copySpriteCSS, endClean), optimizeImages, useminBuild); // ACTION 3: "gulp build" creer la version final dans dist ou docs
+exports.previewDist = previewDist; // affiche la version finale
 
 //dist = docs on github
